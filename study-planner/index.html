@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Study Planner Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <span class="logo-text">Study Planner</span>
+  </div>
+  <nav class="sidebar-nav">
+    <a class="nav-item active" data-page="dashboard" onclick="showPage('dashboard',this)">
+      <span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span>
+    </a>
+    <a class="nav-item" data-page="today" onclick="showPage('today',this)">
+      <span class="nav-icon">📅</span><span class="nav-label">Today</span>
+    </a>
+    <a class="nav-item" data-page="schedule" onclick="showPage('schedule',this)">
+      <span class="nav-icon">🗓</span><span class="nav-label">Schedule</span>
+    </a>
+    <a class="nav-item" data-page="tasks" onclick="showPage('tasks',this)">
+      <span class="nav-icon">✅</span><span class="nav-label">Tasks</span>
+    </a>
+    <a class="nav-item" data-page="exams" onclick="showPage('exams',this)">
+      <span class="nav-icon">📝</span><span class="nav-label">Exams</span>
+    </a>
+    <a class="nav-item" data-page="resources" onclick="showPage('resources',this)">
+      <span class="nav-icon">📚</span><span class="nav-label">Resources</span>
+    </a>
+    <a class="nav-item" data-page="progress" onclick="showPage('progress',this)">
+      <span class="nav-icon">📊</span><span class="nav-label">Progress</span>
+    </a>
+    <a class="nav-item" data-page="analytics" onclick="showPage('analytics',this)">
+      <span class="nav-icon">📈</span><span class="nav-label">Analytics</span>
+    </a>
+  </nav>
+  <div class="sidebar-bottom">
+    <a class="nav-item" onclick="openModal('settingsModal')">
+      <span class="nav-icon">⚙️</span><span class="nav-label">Settings</span>
+    </a>
+    <a class="nav-item" onclick="openModal('helpModal')">
+      <span class="nav-icon">❓</span><span class="nav-label">Help</span>
+    </a>
+  </div>
+</aside>
+
+<!-- MAIN WRAPPER -->
+<div class="main-wrapper" id="mainWrapper">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="menu-btn-top" onclick="toggleSidebar()">☰</button>
+      <h1 class="topbar-title">Study Planner Dashboard</h1>
+    </div>
+    <div class="topbar-center">
+      <span class="welcome-msg">Welcome back, <span id="tbName">Mukti</span>! 👋</span>
+    </div>
+    <div class="topbar-right">
+      <button class="tb-btn" onclick="openModal('searchModal')" title="Search">🔍</button>
+      <button class="tb-btn notif-btn" onclick="openModal('notifModal')" title="Notifications">
+        🔔<span class="notif-badge" id="notifBadge">0</span>
+      </button>
+      <button class="tb-btn" onclick="openModal('settingsModal')" title="Settings">⚙️</button>
+      <img class="tb-avatar" id="tbAvatar" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Alex" alt="avatar" onclick="openModal('profileModal')"/>
+    </div>
+  </header>
+
+  <!-- PAGES -->
+  <div class="pages-container">
+
+    <!-- DASHBOARD PAGE -->
+    <div class="page active" id="pg-dashboard">
+
+      <!-- STAT CARDS ROW -->
+      <div class="stat-row">
+        <div class="stat-card blue">
+          <div class="stat-card-header">
+            <span class="stat-icon blue-icon">✔</span>
+            <span class="stat-title">Today's Tasks</span>
+          </div>
+          <div class="stat-value"><span id="tasksDone">5</span> / <span id="tasksTotal">7</span></div>
+          <div class="stat-sub">Completed</div>
+          <div class="stat-bar"><div class="stat-bar-fill blue-fill" id="taskBarFill"></div></div>
+        </div>
+        <div class="stat-card teal">
+          <div class="stat-card-header">
+            <span class="stat-icon teal-icon">🕐</span>
+            <span class="stat-title">Weekly Study Hours</span>
+          </div>
+          <div class="stat-value"><span id="hoursLogged">12</span> / <span id="hoursGoal">20</span> <small>hrs</small></div>
+          <div class="stat-sub"></div>
+          <div class="stat-bar"><div class="stat-bar-fill teal-fill" id="hoursBarFill"></div></div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-card-header">
+            <span class="stat-icon orange-icon">📋</span>
+            <span class="stat-title">Upcoming Exams</span>
+          </div>
+          <div class="stat-value" id="examCount">3</div>
+          <div class="stat-sub">This Month</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-card-header">
+            <span class="stat-icon purple-icon">🎯</span>
+            <span class="stat-title">Focus Timer</span>
+          </div>
+          <div class="stat-value timer-val" id="timerDisplay">25:00</div>
+          <div class="stat-sub" id="timerLabel">Pomodoro Ready</div>
+          <div class="timer-mini-btns">
+            <button class="tmb" id="timerStartBtn" onclick="toggleTimer()">▶ Start</button>
+            <button class="tmb tmb-reset" onclick="resetTimer()">↺</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MIDDLE ROW -->
+      <div class="mid-row">
+
+        <!-- TODAY'S SCHEDULE -->
+        <div class="card">
+          <div class="card-hdr">
+            <span>Today's Schedule</span>
+            <button class="hdr-btn" onclick="openModal('addScheduleModal')">⊞</button>
+          </div>
+          <ul class="sched-list" id="schedList"></ul>
+          <button class="view-all-btn" onclick="showPage('schedule',null)">View Full Schedule</button>
+        </div>
+
+        <!-- TASK LIST -->
+        <div class="card">
+          <div class="card-hdr">
+            <span>Task List</span>
+            <button class="hdr-btn" onclick="openModal('addTaskModal')">＋</button>
+          </div>
+          <ul class="task-list" id="taskList"></ul>
+          <button class="add-task-row" onclick="openModal('addTaskModal')">＋ Add New Task</button>
+        </div>
+
+        <!-- UPCOMING EXAMS -->
+        <div class="card">
+          <div class="card-hdr">
+            <span>Upcoming Exams</span>
+            <button class="hdr-btn view-all-link" onclick="showPage('exams',null)">View All</button>
+          </div>
+          <ul class="exam-list" id="examList"></ul>
+        </div>
+
+      </div>
+
+      <!-- BOTTOM ROW -->
+      <div class="bot-row">
+
+        <!-- STUDY PROGRESS -->
+        <div class="card">
+          <div class="card-hdr"><span>Study Progress</span></div>
+          <div id="subjectBars"></div>
+          <div class="donut-wrap">
+            <canvas id="donutChart" width="140" height="140"></canvas>
+            <div class="donut-center">
+              <span id="donutPct">68%</span>
+              <small>Weekly Goal<br>Achieved</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUICK ACTIONS -->
+        <div class="card qa-card">
+          <div class="card-hdr"><span>Quick Actions</span></div>
+          <div class="qa-grid">
+            <button class="qa-btn" onclick="startFocusTimer()">
+              <span class="qa-icon purple-qa">🎯</span>
+              <span>Start Focus</span>
+              <small id="qaMin">25 min</small>
+            </button>
+            <button class="qa-btn" onclick="openModal('addNoteModal')">
+              <span class="qa-icon blue-qa">📝</span>
+              <span>Add Note</span>
+            </button>
+            <button class="qa-btn" onclick="openModal('flashcardsModal')">
+              <span class="qa-icon teal-qa">🃏</span>
+              <span>Create Flashcards</span>
+            </button>
+            <button class="qa-btn" onclick="openModal('addResourceModal')">
+              <span class="qa-icon orange-qa">📤</span>
+              <span>Upload Resource</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- RESOURCES -->
+        <div class="card">
+          <div class="card-hdr">
+            <span>Resources</span>
+            <button class="hdr-btn view-all-link" onclick="showPage('resources',null)">View All</button>
+          </div>
+          <ul class="res-list" id="resList"></ul>
+        </div>
+
+      </div>
+    </div><!-- /dashboard -->
+
+    <!-- STREAK PANEL (right sidebar) -->
+    <div class="streak-panel" id="streakPanel">
+      <div class="card streak-card">
+        <div class="card-hdr"><span>Study Streak 🔥</span></div>
+        <div class="streak-ring-wrap">
+          <canvas id="streakRing" width="160" height="160"></canvas>
+          <div class="streak-ring-center">
+            <span class="streak-flame-icon">🔥</span>
+            <span class="streak-num" id="streakNum">0</span>
+            <span class="streak-days-lbl">Days</span>
+          </div>
+        </div>
+        <p class="streak-msg" id="streakMsg">Study today to start your streak!</p>
+        <div class="streak-week" id="streakWeek"></div>
+        <div class="longest-streak">🏆 Longest Streak: <strong id="longestStreak">0 days</strong></div>
+
+        <!-- CALENDAR -->
+        <div class="cal-section">
+          <div class="cal-hdr">
+            <span>This Month</span>
+            <div>
+              <button class="cal-nav" onclick="calNav(-1)">‹</button>
+              <button class="cal-nav" onclick="calNav(1)">›</button>
+            </div>
+          </div>
+          <div class="cal-dow">
+            <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+          <div class="cal-footer">Total Study Days: <strong id="calTotal">0</strong></div>
+          <div class="cal-month-lbl" id="calMonthLbl"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TODAY PAGE -->
+    <div class="page" id="pg-today">
+      <div class="page-title">Today's Overview</div>
+      <div class="card" style="max-width:700px">
+        <div class="card-hdr"><span>Today's Tasks</span><button class="hdr-btn" onclick="openModal('addTaskModal')">＋</button></div>
+        <ul class="task-list" id="todayTaskList"></ul>
+        <button class="add-task-row" onclick="openModal('addTaskModal')">＋ Add New Task</button>
+      </div>
+    </div>
+
+    <!-- SCHEDULE PAGE -->
+    <div class="page" id="pg-schedule">
+      <div class="page-title">Full Schedule</div>
+      <div class="card" style="max-width:700px">
+        <div class="card-hdr"><span>Schedule</span><button class="hdr-btn" onclick="openModal('addScheduleModal')">＋</button></div>
+        <ul class="sched-list" id="fullSchedList"></ul>
+      </div>
+    </div>
+
+    <!-- TASKS PAGE -->
+    <div class="page" id="pg-tasks">
+      <div class="page-title">All Tasks</div>
+      <div class="card" style="max-width:700px">
+        <div class="card-hdr"><span>Tasks</span><button class="hdr-btn" onclick="openModal('addTaskModal')">＋</button></div>
+        <ul class="task-list" id="allTaskList"></ul>
+      </div>
+    </div>
+
+    <!-- EXAMS PAGE -->
+    <div class="page" id="pg-exams">
+      <div class="page-title">Upcoming Exams</div>
+      <div class="card" style="max-width:700px">
+        <div class="card-hdr"><span>Exams</span><button class="hdr-btn" onclick="openModal('addExamModal')">＋</button></div>
+        <ul class="exam-list" id="allExamList"></ul>
+      </div>
+    </div>
+
+    <!-- RESOURCES PAGE -->
+    <div class="page" id="pg-resources">
+      <div class="page-title">Study Resources</div>
+      <div class="card" style="max-width:700px">
+        <div class="card-hdr"><span>Resources</span><button class="hdr-btn" onclick="openModal('addResourceModal')">＋</button></div>
+        <ul class="res-list" id="allResList"></ul>
+      </div>
+    </div>
+
+    <!-- PROGRESS PAGE -->
+    <div class="page" id="pg-progress">
+      <div class="page-title">Study Progress</div>
+      <div class="card" style="max-width:700px">
+        <div class="card-hdr"><span>Subject Progress</span></div>
+        <div id="progressBars"></div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS PAGE -->
+    <div class="page" id="pg-analytics">
+      <div class="page-title">Analytics</div>
+      <div class="card" style="max-width:700px">
+        <div class="card-hdr"><span>Weekly Overview</span></div>
+        <canvas id="analyticsChart" width="600" height="260"></canvas>
+      </div>
+    </div>
+
+  </div><!-- /pages-container -->
+</div><!-- /main-wrapper -->
+
+<!-- TIMER MODAL (full focus timer) -->
+<div class="overlay" id="timerModal">
+  <div class="modal timer-modal">
+    <div class="modal-hdr"><span>Focus Timer</span><button onclick="closeModal('timerModal')">✕</button></div>
+    <div class="timer-mode-tabs">
+      <button class="mode-tab active" id="tabPomodoro" onclick="setTimerMode('pomodoro')">🍅 Pomodoro</button>
+      <button class="mode-tab" id="tabTea" onclick="setTimerMode('tea')">☕ Tea Break</button>
+      <button class="mode-tab" id="tabStudy" onclick="setTimerMode('study')">📖 Study</button>
+    </div>
+    <div class="timer-big" id="timerBig">25:00</div>
+    <div class="timer-status" id="timerStatus">Ready to focus</div>
+    <div class="timer-cycle-info" id="timerCycleInfo">Cycle: Study 30 min → Tea Break 5 min</div>
+    <div class="timer-btns">
+      <button class="t-btn t-start" id="timerMainBtn" onclick="toggleTimer()">▶ Start</button>
+      <button class="t-btn t-reset" onclick="resetTimer()">↺ Reset</button>
+      <button class="t-btn t-skip" onclick="skipPhase()">⏭ Skip</button>
+    </div>
+    <div class="timer-progress-wrap">
+      <div class="timer-progress-bar" id="timerProgressBar"></div>
+    </div>
+    <div class="timer-sessions">Sessions today: <strong id="sessionCount">0</strong></div>
+  </div>
+</div>
+
+<!-- ADD TASK MODAL -->
+<div class="overlay" id="addTaskModal">
+  <div class="modal">
+    <div class="modal-hdr"><span>Add New Task</span><button onclick="closeModal('addTaskModal')">✕</button></div>
+    <label>Task</label>
+    <input type="text" id="newTaskText" placeholder="Task description..." />
+    <label>Subject</label>
+    <input type="text" id="newTaskSubject" list="subjectDL" placeholder="e.g. Math, Biology..." autocomplete="off"/>
+    <datalist id="subjectDL"></datalist>
+    <label>Priority</label>
+    <select id="newTaskPriority">
+      <option value="normal">Normal</option>
+      <option value="high">High</option>
+      <option value="low">Low</option>
+    </select>
+    <button class="modal-submit" onclick="addTask()">Add Task</button>
+  </div>
+</div>
+
+<!-- ADD EXAM MODAL -->
+<div class="overlay" id="addExamModal">
+  <div class="modal">
+    <div class="modal-hdr"><span>Add Exam</span><button onclick="closeModal('addExamModal')">✕</button></div>
+    <label>Exam Name</label>
+    <input type="text" id="newExamName" placeholder="e.g. Chemistry Final"/>
+    <label>Date</label>
+    <input type="date" id="newExamDate"/>
+    <label>Color</label>
+    <select id="newExamColor">
+      <option value="#4f46e5">Blue</option>
+      <option value="#ef4444">Red</option>
+      <option value="#10b981">Green</option>
+      <option value="#f59e0b">Orange</option>
+    </select>
+    <button class="modal-submit" onclick="addExam()">Add Exam</button>
+  </div>
+</div>
+
+<!-- EDIT EXAM MODAL -->
+<div class="overlay" id="editExamModal">
+  <div class="modal">
+    <div class="modal-hdr"><span>Edit Exam</span><button onclick="closeModal('editExamModal')">✕</button></div>
+    <input type="hidden" id="editExamId"/>
+    <label>Exam Name</label>
+    <input type="text" id="editExamName" placeholder="e.g. Chemistry Final"/>
+    <label>Date</label>
+    <input type="date" id="editExamDate"/>
+    <label>Color</label>
+    <select id="editExamColor">
+      <option value="#4f46e5">Blue</option>
+      <option value="#ef4444">Red</option>
+      <option value="#10b981">Green</option>
+      <option value="#f59e0b">Orange</option>
+    </select>
+    <button class="modal-submit" onclick="saveEditExam()">Save Changes</button>
+  </div>
+</div>
+
+<!-- ADD SCHEDULE MODAL -->
+<div class="overlay" id="addScheduleModal">
+  <div class="modal">
+    <div class="modal-hdr"><span>Add Schedule Item</span><button onclick="closeModal('addScheduleModal')">✕</button></div>
+    <label>Time</label>
+    <input type="time" id="newSchedTime"/>
+    <label>Label</label>
+    <input type="text" id="newSchedLabel" placeholder="e.g. Biology Review"/>
+    <label>Color</label>
+    <select id="newSchedColor">
+      <option value="#10b981">Green</option>
+      <option value="#4f46e5">Blue</option>
+      <option value="#f59e0b">Orange</option>
+      <option value="#ef4444">Red</option>
+      <option value="#8b5cf6">Purple</option>
+    </select>
+    <button class="modal-submit" onclick="addScheduleItem()">Add</button>
+  </div>
+</div>
+
+<!-- EDIT RESOURCE MODAL -->
+<div class="overlay" id="editResourceModal">
+  <div class="modal">
+    <div class="modal-hdr"><span>Edit Resource</span><button onclick="closeModal('editResourceModal')">✕</button></div>
+    <input type="hidden" id="editResId"/>
+    <label>Name</label>
+    <input type="text" id="editResName" placeholder="Resource name..."/>
+    <label>Type</label>
+    <select id="editResType">
+      <option value="🔖">🔖PDF</option>
+      <option value="📹">📹Video</option>
+      <option value="🔗">🔗Link</option>
+      <option value="📄">📄Notes</option>
+    </select>
+    <label>URL (optional)</label>
+    <input type="text" id="editResUrl" placeholder="https://..."/>
+    <button class="modal-submit" onclick="saveEditResource()">Save Changes</button>
+  </div>
+</div>
+
+<!-- ADD RESOURCE MODAL -->
+<div class="overlay" id="addResourceModal">
+  <div class="modal">
+    <div class="modal-hdr"><span>Add Resource</span><button onclick="closeModal('addResourceModal')">✕</button></div>
+    <label>Name</label>
+    <input type="text" id="newResName" placeholder="Resource name..."/>
+    <label>Type</label>
+    <select id="newResType">
+      <option value="🔖">🔖PDF</option>
+      <option value="📹">📹Video</option>
+      <option value="🔗">🔗Link</option>
+      <option value="📄">📄Notes</option>
+    </select>
+    <label>URL (optional)</label>
+    <input type="text" id="newResUrl" placeholder="https://..."/>
+    <button class="modal-submit" onclick="addResource()">Add Resource</button>
+  </div>
+</div>
+
+<!-- ADD NOTE MODAL -->
+<div class="overlay" id="addNoteModal">
+  <div class="modal">
+    <div class="modal-hdr"><span>Add Note</span><button onclick="closeModal('addNoteModal')">✕</button></div>
+    <label>Title</label>
+    <input type="text" id="newNoteTitle" placeholder="Note title..."/>
+    <label>Content</label>
+    <textarea id="newNoteContent" rows="5" placeholder="Write your note here..." style="width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:14px;resize:vertical;outline:none;font-family:inherit"></textarea>
+    <button class="modal-submit" onclick="addNote()">Save Note</button>
+  </div>
+</div>
+
+<!-- FLASHCARDS MODAL -->
+<div class="overlay" id="flashcardsModal">
+  <div class="modal">
+    <div class="modal-hdr"><span>Create Flashcard</span><button onclick="closeModal('flashcardsModal')">✕</button></div>
+    <label>Question</label>
+    <input type="text" id="fcQuestion" placeholder="Question..."/>
+    <label>Answer</label>
+    <input type="text" id="fcAnswer" placeholder="Answer..."/>
+    <button class="modal-submit" onclick="addFlashcard()">Save Flashcard</button>
+  </div>
+</div>
+
+<!-- PROFILE MODAL -->
+<div class="overlay" id="profileModal">
+  <div class="modal">
+    <div class="modal-hdr"><span>Update Profile</span><button onclick="closeModal('profileModal')">✕</button></div>
+    <div class="profile-avatar-wrap">
+      <img id="profileAvatarPreview" src="" alt="avatar" class="profile-avatar-big"/>
+      <button class="profile-avatar-change" onclick="$id('profilePicInput').click()">📷 Change Photo</button>
+      <input type="file" id="profilePicInput" accept="image/*" style="display:none" onchange="handleProfilePic(event)"/>
+    </div>
+    <label>Display Name</label>
+    <input type="text" id="profileName" placeholder="Your name"/>
+    <label>Gmail Address</label>
+    <input type="email" id="profileEmail" placeholder="yourname@gmail.com" readonly style="background:#f9fafb;color:#9ca3af;cursor:not-allowed"/>
+    <button class="modal-submit" onclick="saveProfile()">Save Profile</button>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="overlay" id="settingsModal">
+  <div class="modal">
+    <div class="modal-hdr"><span>Settings</span><button onclick="closeModal('settingsModal')">✕</button></div>
+    <label>Your Name</label>
+    <input type="text" id="setName" value="Mukti"/>
+    <label>Pomodoro Duration (min)</label>
+    <input type="number" id="setPomo" value="25" min="1" max="60"/>
+    <label>Tea Break Duration (min)</label>
+    <input type="number" id="setBreak" value="5" min="1" max="30"/>
+    <label>Study Cycle Duration (min)</label>
+    <input type="number" id="setStudyCycle" value="30" min="5" max="120"/>
+    <label>Weekly Hours Goal</label>
+    <input type="number" id="setHrsGoal" value="20" min="1" max="168"/>
+
+    <label>Appearance</label>
+    <div class="theme-toggle-row">
+      <button class="theme-btn" id="themeLightBtn" onclick="setTheme('light')">☀️ Light</button>
+      <button class="theme-btn" id="themeDarkBtn" onclick="setTheme('dark')">🌙 Dark</button>
+    </div>
+
+    <label style="margin-top:14px">Language</label>
+    <select id="setLanguage" onchange="setLanguage(this.value)">
+      <option value="en">🇬🇧 English</option>
+      <option value="hi">🇮🇳 Hindi</option>
+      <option value="gu">🇮🇳 Gujarati</option>
+    </select>
+
+    <button class="modal-submit" onclick="saveSettings()">Save Settings</button>
+    <button class="modal-profile" onclick="closeModal('settingsModal');openModal('profileModal')">👤 Update Profile</button>
+    <button class="modal-logout" onclick="logout()">🚪 Logout</button>
+  </div>
+</div>
+
+<!-- NOTIFICATIONS MODAL -->
+<div class="overlay" id="notifModal">
+  <div class="modal">
+    <div class="modal-hdr"><span>Notifications</span><button onclick="closeModal('notifModal')">✕</button></div>
+    <ul class="notif-list" id="notifList"></ul>
+    <button class="modal-submit" onclick="clearNotifs()">Clear All</button>
+  </div>
+</div>
+
+<!-- SEARCH MODAL -->
+<div class="overlay" id="searchModal">
+  <div class="modal">
+    <div class="modal-hdr"><span>Search</span><button onclick="closeModal('searchModal')">✕</button></div>
+    <input type="text" id="searchInput" placeholder="Search tasks, exams, resources..." oninput="doSearch()"/>
+    <ul class="notif-list" id="searchResults"></ul>
+  </div>
+</div>
+
+<!-- HELP MODAL -->
+<div class="overlay" id="helpModal">
+  <div class="modal">
+    <div class="modal-hdr"><span>Help</span><button onclick="closeModal('helpModal')">✕</button></div>
+    <p style="font-size:14px;color:#374151;line-height:1.7">
+      <strong>Timer Cycle:</strong> Study 30 min → ☕ Tea Break 5 min → repeat.<br>
+      <strong>Pomodoro:</strong> 25 min focus → 5 min break.<br>
+      <strong>Streak:</strong> Complete at least one task per day to maintain your streak.<br>
+      <strong>Quick Actions:</strong> Use the dashboard buttons to quickly start a session, add notes, or upload resources.
+    </p>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast" onclick="hideToast()">
+  <span id="toastIcon">🔔</span>
+  <div>
+    <div id="toastTitle" style="font-weight:700;font-size:14px"></div>
+    <div id="toastMsg" style="font-size:12px;opacity:.9"></div>
+  </div>
+  <button onclick="event.stopPropagation();hideToast()" style="background:none;border:none;color:white;font-size:18px;cursor:pointer;margin-left:auto">✕</button>
+</div>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

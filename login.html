@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Study Planner – Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:'Inter',sans-serif;
+      min-height:100vh;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      padding:20px;
+      position:relative;overflow:hidden;
+      background:#b8c8f0;
+    }
+
+    /* ===== BACKGROUND IMAGE ===== */
+    .scene{
+      position:fixed;inset:0;z-index:0;
+      background-image:url('study-planner/assets/login-bg.jpeg');
+      background-size:cover;
+      background-position:center center;
+      background-repeat:no-repeat;
+      /* Fallback gradient if image not found */
+      background-color:#b8c8f0;
+    }
+    /* Subtle overlay to keep card readable */
+    .scene::after{
+      content:'';
+      position:absolute;inset:0;
+      background:linear-gradient(
+        135deg,
+        rgba(180,160,230,.15) 0%,
+        rgba(140,120,210,.1) 50%,
+        rgba(200,170,240,.12) 100%
+      );
+    }
+
+    /* Twinkling sparkles on top of image */
+    .sparkle{position:absolute;pointer-events:none;animation:sparkleAnim 4s infinite;z-index:1}
+    @keyframes sparkleAnim{0%,100%{opacity:0;transform:scale(0) rotate(0deg)}50%{opacity:1;transform:scale(1) rotate(180deg)}}
+    .sparkle::before,.sparkle::after{content:'';position:absolute;background:white;border-radius:2px}
+    .sparkle::before{width:2px;height:14px;left:50%;top:50%;transform:translate(-50%,-50%)}
+    .sparkle::after{width:14px;height:2px;left:50%;top:50%;transform:translate(-50%,-50%)}
+    .stars{position:absolute;inset:0;pointer-events:none;z-index:1}
+    .star{position:absolute;border-radius:50%;background:white;animation:twinkle 3s infinite}
+    @keyframes twinkle{0%,100%{opacity:.1;transform:scale(1)}50%{opacity:.8;transform:scale(1.6)}}
+
+    /* Top brand */
+    .brand{
+      display:flex;align-items:center;gap:10px;
+      margin-bottom:28px;z-index:10;position:relative;
+    }
+    .brand-avatar{
+      width:48px;height:48px;border-radius:50%;
+      background:white;display:flex;align-items:center;justify-content:center;
+      font-size:24px;box-shadow:0 4px 16px rgba(0,0,0,.15);overflow:hidden;
+    }
+    .brand-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+    .brand-text{font-size:20px;font-weight:800;color:white;text-shadow:0 2px 8px rgba(0,0,0,.2)}
+    .brand-text span{color:#c4b5fd}
+
+    /* Card */
+    .card{
+      background:rgba(255,255,255,.92);
+      backdrop-filter:blur(20px);
+      border-radius:24px;
+      padding:36px 36px 28px;
+      width:100%;max-width:420px;
+      box-shadow:0 20px 60px rgba(100,80,180,.25);
+      z-index:10;position:relative;
+    }
+
+    .card-title{font-size:24px;font-weight:800;color:#1e1b4b;text-align:center;margin-bottom:6px}
+    .card-sub{font-size:14px;color:#6b7280;text-align:center;margin-bottom:28px}
+
+    /* Tabs */
+    .tabs{display:flex;background:#f3f4f6;border-radius:12px;padding:4px;margin-bottom:24px;gap:4px}
+    .tab{flex:1;padding:9px;border:none;background:none;border-radius:9px;font-size:14px;font-weight:600;color:#6b7280;cursor:pointer;transition:all .2s}
+    .tab.active{background:white;color:#4f46e5;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+
+    /* Fields */
+    .field{margin-bottom:16px}
+    .field label{display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px}
+    .input-wrap{position:relative;display:flex;align-items:center}
+    .input-icon{position:absolute;left:13px;font-size:16px;pointer-events:none;z-index:1}
+    .field input{
+      width:100%;padding:12px 12px 12px 40px;
+      border:1.5px solid #e5e7eb;border-radius:12px;
+      font-size:14px;color:#111827;background:#fafafa;
+      outline:none;transition:all .2s;font-family:inherit;
+    }
+    .field input:focus{border-color:#4f46e5;background:white;box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+    .toggle-pw{position:absolute;right:12px;background:none;border:none;cursor:pointer;font-size:16px;color:#9ca3af;padding:4px}
+
+    /* Forgot */
+    .forgot-row{text-align:right;margin-bottom:20px}
+    .forgot-row a{font-size:13px;color:#4f46e5;font-weight:600;text-decoration:none}
+    .forgot-row a:hover{text-decoration:underline}
+
+    /* Submit btn */
+    .btn-submit{
+      width:100%;padding:14px;
+      background:linear-gradient(135deg,#4f46e5,#7c3aed);
+      color:white;border:none;border-radius:14px;
+      font-size:15px;font-weight:700;cursor:pointer;
+      letter-spacing:.5px;transition:all .2s;
+      box-shadow:0 4px 16px rgba(79,70,229,.4);
+    }
+    .btn-submit:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(79,70,229,.5)}
+    .btn-submit:active{transform:translateY(0)}
+
+    /* Divider */
+    .divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:#9ca3af;font-size:12px}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:#e5e7eb}
+
+    /* Google btn */
+    .btn-google{
+      width:100%;padding:12px;
+      background:white;border:1.5px solid #e5e7eb;border-radius:12px;
+      font-size:14px;font-weight:600;color:#374151;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      transition:all .2s;
+    }
+    .btn-google:hover{border-color:#4f46e5;background:#f5f3ff}
+    .google-icon{width:20px;height:20px}
+
+    /* Signup row */
+    .signup-row{text-align:center;font-size:13px;color:#6b7280;margin-top:20px}
+    .signup-row a{color:#4f46e5;font-weight:700;text-decoration:none;cursor:pointer}
+    .signup-row a:hover{text-decoration:underline}
+
+    /* Error */
+    .error-msg{
+      display:none;background:#fef2f2;border:1.5px solid #fecaca;
+      color:#dc2626;border-radius:10px;padding:10px 14px;
+      font-size:13px;margin-bottom:16px;align-items:center;gap:8px;
+    }
+    .error-msg.show{display:flex}
+
+    /* Success */
+    .success-view{display:none;flex-direction:column;align-items:center;text-align:center;padding:10px 0}
+    .success-view.show{display:flex}
+    .success-icon{font-size:56px;margin-bottom:14px;animation:pop .4s ease}
+    @keyframes pop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+    .success-view h3{font-size:20px;font-weight:800;color:#1e1b4b;margin-bottom:8px}
+    .success-view p{font-size:14px;color:#6b7280;margin-bottom:20px}
+    .btn-go{
+      padding:12px 32px;background:linear-gradient(135deg,#4f46e5,#7c3aed);
+      color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;
+    }
+
+    /* Footer */
+    .footer{margin-top:20px;font-size:12px;color:rgba(255,255,255,.7);z-index:10;position:relative;text-align:center}
+
+    @media(max-width:480px){
+      .card{padding:28px 22px 22px}
+      .card-title{font-size:20px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== BACKGROUND SCENE ===== -->
+<div class="scene">
+  <div class="stars" id="stars"></div>
+
+  <!-- Sparkle crosses matching the image -->
+  <div class="sparkle" style="left:22%;top:20%;width:16px;height:16px;animation-delay:0s"></div>
+  <div class="sparkle" style="left:35%;top:14%;width:12px;height:12px;animation-delay:1.2s"></div>
+  <div class="sparkle" style="left:48%;top:22%;width:10px;height:10px;animation-delay:0.6s"></div>
+  <div class="sparkle" style="left:60%;top:10%;width:14px;height:14px;animation-delay:2s"></div>
+  <div class="sparkle" style="left:72%;top:18%;width:18px;height:18px;animation-delay:0.3s"></div>
+  <div class="sparkle" style="left:80%;top:28%;width:12px;height:12px;animation-delay:1.8s"></div>
+  <div class="sparkle" style="left:55%;top:32%;width:10px;height:10px;animation-delay:3s"></div>
+  <div class="sparkle" style="left:42%;top:38%;width:8px;height:8px;animation-delay:1s"></div>
+  <div class="sparkle" style="left:28%;top:30%;width:12px;height:12px;animation-delay:2.5s"></div>
+  <div class="sparkle" style="left:88%;top:15%;width:10px;height:10px;animation-delay:0.8s"></div>
+</div>
+
+<!-- Brand -->
+<div class="brand">
+  <div class="brand-avatar" id="brandAvatar">
+    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Alex" alt="avatar" id="brandAvatarImg"/>
+  </div>
+  <div class="brand-text">Study Planner <span>Dashboard</span></div>
+</div>
+
+<!-- Card -->
+<div class="card">
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" id="tabLogin" onclick="switchTab('login')">Log In</button>
+    <button class="tab" id="tabSignup" onclick="switchTab('signup')">Sign Up</button>
+  </div>
+
+  <!-- LOGIN FORM -->
+  <div id="loginView">
+    <div class="card-title">Welcome Back!</div>
+    <div class="card-sub">Log in to your account</div>
+
+    <div class="error-msg" id="loginError"><span>⚠️</span><span id="loginErrorText">Invalid credentials.</span></div>
+
+    <div class="field">
+      <label>Email</label>
+      <div class="input-wrap">
+        <span class="input-icon">✉️</span>
+        <input type="email" id="loginEmail" placeholder="alex@gmail.com" autocomplete="email"/>
+      </div>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <div class="input-wrap">
+        <span class="input-icon">🔒</span>
+        <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"/>
+        <button class="toggle-pw" onclick="togglePw('loginPass',this)">👁️</button>
+      </div>
+    </div>
+    <div class="forgot-row"><a href="#" onclick="forgotPassword()">Forgot password?</a></div>
+    <button class="btn-submit" onclick="handleLogin()">LOG IN</button>
+
+    <div class="divider">or</div>
+    <button class="btn-google" onclick="googleLogin()">
+      <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+      Continue with Google
+    </button>
+
+    <div class="signup-row">Don't have an account? <a onclick="switchTab('signup')">Sign Up</a></div>
+  </div>
+
+  <!-- SIGNUP FORM -->
+  <div id="signupView" style="display:none">
+    <div class="card-title">Create Account</div>
+    <div class="card-sub">Start your study journey today</div>
+
+    <div class="error-msg" id="signupError"><span>⚠️</span><span id="signupErrorText">Please check your details.</span></div>
+
+    <div class="field">
+      <label>Full Name</label>
+      <div class="input-wrap">
+        <span class="input-icon">👤</span>
+        <input type="text" id="signupName" placeholder="Your name"/>
+      </div>
+    </div>
+    <div class="field">
+      <label>Gmail Address</label>
+      <div class="input-wrap">
+        <span class="input-icon">✉️</span>
+        <input type="email" id="signupEmail" placeholder="yourname@gmail.com"/>
+      </div>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <div class="input-wrap">
+        <span class="input-icon">🔒</span>
+        <input type="password" id="signupPass" placeholder="Min 6 characters"/>
+        <button class="toggle-pw" onclick="togglePw('signupPass',this)">👁️</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Confirm Password</label>
+      <div class="input-wrap">
+        <span class="input-icon">🔒</span>
+        <input type="password" id="signupConfirm" placeholder="Repeat password"/>
+        <button class="toggle-pw" onclick="togglePw('signupConfirm',this)">👁️</button>
+      </div>
+    </div>
+    <button class="btn-submit" onclick="handleSignup()">CREATE ACCOUNT</button>
+    <div class="signup-row">Already have an account? <a onclick="switchTab('login')">Log In</a></div>
+  </div>
+
+  <!-- SUCCESS VIEW -->
+  <div class="success-view" id="successView">
+    <div class="success-icon">🎉</div>
+    <h3 id="successName">Welcome back, Alex!</h3>
+    <p>You're all set. Redirecting to your dashboard...</p>
+    <button class="btn-go" onclick="goToDashboard()">Go to Dashboard →</button>
+  </div>
+
+</div>
+
+<div class="footer">© 2024 Study Planner. All rights reserved.</div>
+
+<script>
+  // ===== BACKGROUND IMAGE CHECK =====
+  // Test if the background image loads; if not, apply a painted gradient fallback
+  const bgTest = new Image();
+  bgTest.onload = () => {
+    document.querySelector('.scene').style.backgroundImage = "url('study-planner/assets/login-bg.jpeg')";
+  };
+  bgTest.onerror = () => {
+    document.querySelector('.scene').style.background = `
+      linear-gradient(160deg,
+        #7ec8e3 0%, #a8c8f0 15%,
+        #b8a8e8 30%, #c8a8e0 45%,
+        #d4b8e8 55%, #e0c8f0 65%,
+        #e8d4f4 75%, #f0e0f8 85%,
+        #f5e8fc 100%
+      )
+    `;
+  };
+  bgTest.src = 'study-planner/assets/login-bg.jpeg';
+
+  // ===== STARS =====
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 3 + 1;
+    s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*65}%;width:${size}px;height:${size}px;animation-delay:${Math.random()*5}s;animation-duration:${2+Math.random()*4}s`;
+    starsEl.appendChild(s);
+  }
+
+  // ===== AUTH STORE =====
+  function getUsers() { return JSON.parse(localStorage.getItem('sp_users') || '[]'); }
+  function saveUsers(u) { localStorage.setItem('sp_users', JSON.stringify(u)); }
+
+  // ===== TAB SWITCH =====
+  function switchTab(tab) {
+    document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+    document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+    document.getElementById('loginView').style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById('signupView').style.display = tab === 'signup' ? 'block' : 'none';
+    document.getElementById('successView').classList.remove('show');
+    hideError('loginError'); hideError('signupError');
+  }
+
+  // ===== TOGGLE PASSWORD =====
+  function togglePw(inputId, btn) {
+    const inp = document.getElementById(inputId);
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    btn.textContent = inp.type === 'password' ? '👁️' : '🙈';
+  }
+
+  // ===== ERROR HELPERS =====
+  function showError(id, msg) {
+    const el = document.getElementById(id);
+    el.querySelector('span:last-child').textContent = msg;
+    el.classList.add('show');
+  }
+  function hideError(id) { document.getElementById(id).classList.remove('show'); }
+
+  // ===== LOGIN =====
+  function handleLogin() {
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const pass = document.getElementById('loginPass').value;
+    hideError('loginError');
+
+    if (!email || !pass) { showError('loginError', 'Please fill in all fields.'); return; }
+    if (!email.includes('@')) { showError('loginError', 'Please enter a valid email address.'); return; }
+
+    const users = getUsers();
+    const user = users.find(u => u.email === email && u.password === pass);
+
+    if (user) {
+      localStorage.setItem('sp_loggedIn', JSON.stringify({ email: user.email, name: user.name, avatar: user.avatar || '' }));
+      showSuccess(user.name);
+    } else {
+      // Demo fallback: allow alex@gmail.com / study123
+      if (email === '@gmail.com' && pass === 'study123') {
+        const demoUser = { email, name: 'Alex', avatar: '' };
+        localStorage.setItem('sp_loggedIn', JSON.stringify(demoUser));
+        showSuccess('Alex');
+      } else {
+        showError('loginError', 'Incorrect email or password.');
+        document.getElementById('loginPass').value = '';
+      }
+    }
+  }
+
+  // ===== SIGNUP =====
+  function handleSignup() {
+    const name = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim().toLowerCase();
+    const pass = document.getElementById('signupPass').value;
+    const confirm = document.getElementById('signupConfirm').value;
+    hideError('signupError');
+
+    if (!name || !email || !pass || !confirm) { showError('signupError', 'Please fill in all fields.'); return; }
+    if (!email.endsWith('@gmail.com')) { showError('signupError', 'Please use a valid @gmail.com address.'); return; }
+    if (pass.length < 6) { showError('signupError', 'Password must be at least 6 characters.'); return; }
+    if (pass !== confirm) { showError('signupError', 'Passwords do not match.'); return; }
+
+    const users = getUsers();
+    if (users.find(u => u.email === email)) { showError('signupError', 'This email is already registered.'); return; }
+
+    users.push({ email, name, password: pass, avatar: '' });
+    saveUsers(users);
+    localStorage.setItem('sp_loggedIn', JSON.stringify({ email, name, avatar: '' }));
+    showSuccess(name);
+  }
+
+  // ===== GOOGLE LOGIN (simulated) =====
+  function googleLogin() {
+    const email = prompt('Enter your Gmail address:');
+    if (!email) return;
+    if (!email.endsWith('@gmail.com')) { alert('Please use a @gmail.com address.'); return; }
+    const name = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    const users = getUsers();
+    if (!users.find(u => u.email === email.toLowerCase())) {
+      users.push({ email: email.toLowerCase(), name, password: '', avatar: '' });
+      saveUsers(users);
+    }
+    localStorage.setItem('sp_loggedIn', JSON.stringify({ email: email.toLowerCase(), name, avatar: '' }));
+    showSuccess(name);
+  }
+
+  // ===== FORGOT PASSWORD =====
+  function forgotPassword() {
+    const email = prompt('Enter your registered Gmail address:');
+    if (!email) return;
+    const users = getUsers();
+    const user = users.find(u => u.email === email.toLowerCase());
+    if (user) {
+      alert(`Password hint: Your password is saved locally.\n\nFor demo: alex@gmail.com → study123`);
+    } else {
+      alert('No account found with that email.');
+    }
+  }
+
+  // ===== SUCCESS =====
+  function showSuccess(name) {
+    document.getElementById('loginView').style.display = 'none';
+    document.getElementById('signupView').style.display = 'none';
+    document.getElementById('successName').textContent = `Welcome, ${name}! 👋`;
+    document.getElementById('successView').classList.add('show');
+    // Update brand avatar
+    document.getElementById('brandAvatarImg').src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${name}`;
+    setTimeout(goToDashboard, 2500);
+  }
+
+  function goToDashboard() {
+    window.location.href = '../study-planner/index.html';
+  }
+
+  // ===== ENTER KEY =====
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const loginVisible = document.getElementById('loginView').style.display !== 'none';
+      if (loginVisible) handleLogin(); else handleSignup();
+    }
+  });
+
+  // ===== CHECK IF ALREADY LOGGED IN =====
+  if (localStorage.getItem('sp_loggedIn')) {
+    // Already logged in — go straight to dashboard
+    // (comment this out if you want to always show login)
+    // goToDashboard();
+  }
+</script>
+</body>
+</html>
