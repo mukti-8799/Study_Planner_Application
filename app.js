@@ -730,7 +730,7 @@ function saveSettings() {
 function logout() {
   if (confirm('Log out of Study Planner?')) {
     localStorage.removeItem('sp_loggedIn');
-    window.location.href = '../login.html';
+    window.location.href = 'login.html';
   }
 }
 
@@ -976,7 +976,7 @@ function init() {
   const user = JSON.parse(localStorage.getItem('sp_loggedIn') || '{}');
   if (!localStorage.getItem('sp_loggedIn')) {
     // Not logged in — redirect to login
-    window.location.href = '../.vscode/login.html';
+    window.location.href = 'login.html';
     return;
   }
   if (user.name && !localStorage.getItem('sp3')) S.name = user.name;

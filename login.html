@@ -360,7 +360,7 @@
       showSuccess(user.name);
     } else {
       // Demo fallback: allow alex@gmail.com / study123
-      if (email === '@gmail.com' && pass === 'study123') {
+      if (email === 'alex@gmail.com' && pass === 'study123') {
         const demoUser = { email, name: 'Alex', avatar: '' };
         localStorage.setItem('sp_loggedIn', JSON.stringify(demoUser));
         showSuccess('Alex');
@@ -433,7 +433,7 @@
   }
 
   function goToDashboard() {
-    window.location.href = '../study-planner/index.html';
+    window.location.href = 'index.html';
   }
 
   // ===== ENTER KEY =====
