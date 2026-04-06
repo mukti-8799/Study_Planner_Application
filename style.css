@@ -11,6 +11,8 @@ body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,#c7d9f5 0%
 .sidebar.collapsed .logo-text{display:none}
 .sidebar-nav{flex:1;padding:12px 0;display:flex;flex-direction:column;gap:2px}
 .sidebar-bottom{padding:12px 0;border-top:1px solid rgba(255,255,255,.12)}
+.nav-logout{color:rgba(255,160,160,.85)!important}
+.nav-logout:hover{background:rgba(239,68,68,.18)!important;color:#fca5a5!important}
 .nav-item{display:flex;align-items:center;gap:12px;padding:11px 18px;color:rgba(255,255,255,.75);cursor:pointer;border-radius:0;transition:all .2s;text-decoration:none;white-space:nowrap;border-left:3px solid transparent}
 .nav-item:hover{background:rgba(255,255,255,.12);color:white}
 .nav-item.active{background:rgba(255,255,255,.18);color:white;border-left-color:white;font-weight:600}

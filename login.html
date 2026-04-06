@@ -97,8 +97,12 @@
 
     /* Forgot */
     .forgot-row{text-align:right;margin-bottom:20px}
-    .forgot-row a{font-size:13px;color:#4f46e5;font-weight:600;text-decoration:none}
+    .forgot-row a{font-size:13px;color:#4f46e5;font-weight:600;text-decoration:none;cursor:pointer}
     .forgot-row a:hover{text-decoration:underline}
+
+    /* Success inline */
+    .success-msg{display:none;background:#f0fdf4;border:1.5px solid #bbf7d0;color:#16a34a;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:16px;font-weight:600}
+    .success-msg.show{display:block}
 
     /* Submit btn */
     .btn-submit{
@@ -159,6 +163,38 @@
       .card{padding:28px 22px 22px}
       .card-title{font-size:20px}
     }
+
+    /* ===== SIGNUP POPUP ===== */
+    .signup-popup{
+      display:none;position:fixed;inset:0;z-index:999;
+      background:rgba(0,0,0,.45);backdrop-filter:blur(4px);
+      align-items:center;justify-content:center;
+    }
+    .signup-popup.show{display:flex;animation:fadeIn .25s ease}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    .signup-popup-inner{
+      background:white;border-radius:24px;padding:36px 32px 28px;
+      max-width:340px;width:90%;text-align:center;
+      box-shadow:0 20px 60px rgba(100,80,180,.35);
+      animation:popBounce .35s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes popBounce{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+    .popup-emoji{font-size:52px;margin-bottom:12px;animation:wiggle 1s ease infinite}
+    @keyframes wiggle{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+    .popup-title{font-size:18px;font-weight:800;color:#1e1b4b;margin-bottom:8px}
+    .popup-msg{font-size:14px;color:#6b7280;line-height:1.6;margin-bottom:24px}
+    .popup-btns{display:flex;flex-direction:column;gap:10px}
+    .popup-btn-signup{
+      padding:13px;background:linear-gradient(135deg,#4f46e5,#7c3aed);
+      color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;
+      cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(79,70,229,.4);
+    }
+    .popup-btn-signup:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(79,70,229,.5)}
+    .popup-btn-cancel{
+      padding:11px;background:#f3f4f6;color:#6b7280;
+      border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;
+    }
+    .popup-btn-cancel:hover{background:#e5e7eb;color:#374151}
   </style>
 </head>
 <body>
@@ -219,7 +255,7 @@
         <button class="toggle-pw" onclick="togglePw('loginPass',this)">👁️</button>
       </div>
     </div>
-    <div class="forgot-row"><a href="#" onclick="forgotPassword()">Forgot password?</a></div>
+    <div class="forgot-row"><a onclick="showForgotView()">Forgot password?</a></div>
     <button class="btn-submit" onclick="handleLogin()">LOG IN</button>
 
     <div class="divider">or</div>
@@ -275,32 +311,67 @@
   <!-- SUCCESS VIEW -->
   <div class="success-view" id="successView">
     <div class="success-icon">🎉</div>
-    <h3 id="successName">Welcome back, Alex!</h3>
+    <h3 id="successName">Welcome back!</h3>
     <p>You're all set. Redirecting to your dashboard...</p>
     <button class="btn-go" onclick="goToDashboard()">Go to Dashboard →</button>
+  </div>
+
+  <!-- FORGOT PASSWORD VIEW -->
+  <div id="forgotView" style="display:none">
+    <div class="card-title">Reset Password</div>
+    <div class="card-sub">Enter your Gmail and a new password</div>
+    <div class="error-msg" id="forgotError"><span>⚠️</span><span id="forgotErrorText"></span></div>
+    <div class="success-msg" id="forgotSuccess">✅ Password updated! You can now log in.</div>
+    <div class="field">
+      <label>Gmail Address</label>
+      <div class="input-wrap">
+        <span class="input-icon">✉️</span>
+        <input type="email" id="forgotEmail" placeholder="yourname@gmail.com"/>
+      </div>
+    </div>
+    <div class="field">
+      <label>New Password</label>
+      <div class="input-wrap">
+        <span class="input-icon">🔒</span>
+        <input type="password" id="forgotNewPass" placeholder="Min 6 characters"/>
+        <button class="toggle-pw" onclick="togglePw('forgotNewPass',this)">👁️</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Confirm New Password</label>
+      <div class="input-wrap">
+        <span class="input-icon">🔒</span>
+        <input type="password" id="forgotConfirmPass" placeholder="Repeat new password"/>
+        <button class="toggle-pw" onclick="togglePw('forgotConfirmPass',this)">👁️</button>
+      </div>
+    </div>
+    <button class="btn-submit" onclick="handleResetPassword()">RESET PASSWORD</button>
+    <div class="signup-row" style="margin-top:14px"><a onclick="showLoginView()">← Back to Login</a></div>
   </div>
 
 </div>
 
 <div class="footer">© 2024 Study Planner. All rights reserved.</div>
 
+<!-- CUTE SIGNUP POPUP -->
+<div class="signup-popup" id="signupPopup">
+  <div class="signup-popup-inner">
+    <div class="popup-emoji">🌟</div>
+    <div class="popup-title">Looks like you're new here!</div>
+    <div class="popup-msg">No account found for this email.<br>Create one — it only takes a second! 🚀</div>
+    <div class="popup-btns">
+      <button class="popup-btn-signup" onclick="closePopup();switchTab('signup')">Sign Up Now</button>
+      <button class="popup-btn-cancel" onclick="closePopup()">Maybe Later</button>
+    </div>
+  </div>
+</div>
+
 <script>
-  // ===== BACKGROUND IMAGE CHECK =====
-  // Test if the background image loads; if not, apply a painted gradient fallback
+  // ===== BACKGROUND =====
   const bgTest = new Image();
-  bgTest.onload = () => {
-    document.querySelector('.scene').style.backgroundImage = "url('study-planner/assets/login-bg.jpeg')";
-  };
+  bgTest.onload = () => { document.querySelector('.scene').style.backgroundImage = "url('study-planner/assets/login-bg.jpeg')"; };
   bgTest.onerror = () => {
-    document.querySelector('.scene').style.background = `
-      linear-gradient(160deg,
-        #7ec8e3 0%, #a8c8f0 15%,
-        #b8a8e8 30%, #c8a8e0 45%,
-        #d4b8e8 55%, #e0c8f0 65%,
-        #e8d4f4 75%, #f0e0f8 85%,
-        #f5e8fc 100%
-      )
-    `;
+    document.querySelector('.scene').style.background = `linear-gradient(160deg,#7ec8e3 0%,#a8c8f0 15%,#b8a8e8 30%,#c8a8e0 45%,#d4b8e8 55%,#e0c8f0 65%,#e8d4f4 75%,#f0e0f8 85%,#f5e8fc 100%)`;
   };
   bgTest.src = 'study-planner/assets/login-bg.jpeg';
 
@@ -314,34 +385,73 @@
     starsEl.appendChild(s);
   }
 
-  // ===== AUTH STORE =====
+  // ===== USER STORE (persisted in localStorage forever) =====
   function getUsers() { return JSON.parse(localStorage.getItem('sp_users') || '[]'); }
   function saveUsers(u) { localStorage.setItem('sp_users', JSON.stringify(u)); }
 
-  // ===== TAB SWITCH =====
-  function switchTab(tab) {
-    document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
-    document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
-    document.getElementById('loginView').style.display = tab === 'login' ? 'block' : 'none';
-    document.getElementById('signupView').style.display = tab === 'signup' ? 'block' : 'none';
-    document.getElementById('successView').classList.remove('show');
-    hideError('loginError'); hideError('signupError');
-  }
-
-  // ===== TOGGLE PASSWORD =====
-  function togglePw(inputId, btn) {
-    const inp = document.getElementById(inputId);
-    inp.type = inp.type === 'password' ? 'text' : 'password';
-    btn.textContent = inp.type === 'password' ? '👁️' : '🙈';
-  }
-
-  // ===== ERROR HELPERS =====
+  // ===== HELPERS =====
   function showError(id, msg) {
     const el = document.getElementById(id);
     el.querySelector('span:last-child').textContent = msg;
     el.classList.add('show');
   }
   function hideError(id) { document.getElementById(id).classList.remove('show'); }
+
+  function togglePw(inputId, btn) {
+    const inp = document.getElementById(inputId);
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    btn.textContent = inp.type === 'password' ? '👁️' : '🙈';
+  }
+
+  function showSignupPopup() {
+    // Pre-fill signup email from login field
+    const email = document.getElementById('loginEmail').value.trim();
+    if (email) document.getElementById('signupEmail').value = email;
+    document.getElementById('signupPopup').classList.add('show');
+  }
+  function closePopup() {
+    document.getElementById('signupPopup').classList.remove('show');
+  }
+  // Close popup on backdrop click
+  document.getElementById('signupPopup').addEventListener('click', function(e) {
+    if (e.target === this) closePopup();
+  });
+
+  // ===== VIEW SWITCHING =====
+  function hideAllViews() {
+    ['loginView','signupView','successView','forgotView'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+    document.getElementById('successView').classList.remove('show');
+    // Hide tabs on forgot view
+    document.querySelector('.tabs').style.display = 'flex';
+  }
+
+  function switchTab(tab) {
+    hideAllViews();
+    document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+    document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+    document.getElementById(tab === 'login' ? 'loginView' : 'signupView').style.display = 'block';
+    hideError('loginError'); hideError('signupError');
+  }
+
+  function showForgotView() {
+    hideAllViews();
+    document.querySelector('.tabs').style.display = 'none';
+    document.getElementById('forgotView').style.display = 'block';
+    document.getElementById('forgotEmail').value = document.getElementById('loginEmail').value || '';
+    hideError('forgotError');
+    document.getElementById('forgotSuccess').classList.remove('show');
+  }
+
+  function showLoginView() {
+    hideAllViews();
+    document.querySelector('.tabs').style.display = 'flex';
+    document.getElementById('loginView').style.display = 'block';
+    document.getElementById('tabLogin').classList.add('active');
+    document.getElementById('tabSignup').classList.remove('active');
+  }
 
   // ===== LOGIN =====
   function handleLogin() {
@@ -359,15 +469,14 @@
       localStorage.setItem('sp_loggedIn', JSON.stringify({ email: user.email, name: user.name, avatar: user.avatar || '' }));
       showSuccess(user.name);
     } else {
-      // Demo fallback: allow alex@gmail.com / study123
-      if (email === 'alex@gmail.com' && pass === 'study123') {
-        const demoUser = { email, name: 'Alex', avatar: '' };
-        localStorage.setItem('sp_loggedIn', JSON.stringify(demoUser));
-        showSuccess('Alex');
+      // Check if email exists but wrong password
+      const emailExists = users.find(u => u.email === email);
+      if (emailExists) {
+        showError('loginError', 'Incorrect password. Use "Forgot password?" to reset it.');
       } else {
-        showError('loginError', 'Incorrect email or password.');
-        document.getElementById('loginPass').value = '';
+        showSignupPopup();
       }
+      document.getElementById('loginPass').value = '';
     }
   }
 
@@ -380,24 +489,62 @@
     hideError('signupError');
 
     if (!name || !email || !pass || !confirm) { showError('signupError', 'Please fill in all fields.'); return; }
-    if (!email.endsWith('@gmail.com')) { showError('signupError', 'Please use a valid @gmail.com address.'); return; }
+    if (!email.includes('@') || !email.includes('.')) { showError('signupError', 'Please enter a valid email address.'); return; }
     if (pass.length < 6) { showError('signupError', 'Password must be at least 6 characters.'); return; }
     if (pass !== confirm) { showError('signupError', 'Passwords do not match.'); return; }
 
     const users = getUsers();
-    if (users.find(u => u.email === email)) { showError('signupError', 'This email is already registered.'); return; }
+    if (users.find(u => u.email === email)) { showError('signupError', 'This email is already registered. Please log in.'); return; }
 
+    // Save user permanently
     users.push({ email, name, password: pass, avatar: '' });
     saveUsers(users);
+
     localStorage.setItem('sp_loggedIn', JSON.stringify({ email, name, avatar: '' }));
     showSuccess(name);
   }
 
-  // ===== GOOGLE LOGIN (simulated) =====
+  // ===== RESET PASSWORD =====
+  function handleResetPassword() {
+    const email = document.getElementById('forgotEmail').value.trim().toLowerCase();
+    const newPass = document.getElementById('forgotNewPass').value;
+    const confirmPass = document.getElementById('forgotConfirmPass').value;
+    hideError('forgotError');
+    document.getElementById('forgotSuccess').classList.remove('show');
+
+    if (!email || !newPass || !confirmPass) { showError('forgotError', 'Please fill in all fields.'); return; }
+    if (!email.includes('@')) { showError('forgotError', 'Please enter a valid email address.'); return; }
+    if (newPass.length < 6) { showError('forgotError', 'Password must be at least 6 characters.'); return; }
+    if (newPass !== confirmPass) { showError('forgotError', 'Passwords do not match.'); return; }
+
+    const users = getUsers();
+    const userIndex = users.findIndex(u => u.email === email);
+
+    if (userIndex === -1) {
+      showError('forgotError', 'No account found with this email. Please sign up first.');
+      return;
+    }
+
+    // Update password
+    users[userIndex].password = newPass;
+    saveUsers(users);
+
+    document.getElementById('forgotSuccess').classList.add('show');
+    document.getElementById('forgotNewPass').value = '';
+    document.getElementById('forgotConfirmPass').value = '';
+
+    // Auto-redirect to login after 2s
+    setTimeout(() => {
+      showLoginView();
+      document.getElementById('loginEmail').value = email;
+    }, 2000);
+  }
+
+  // ===== GOOGLE LOGIN =====
   function googleLogin() {
     const email = prompt('Enter your Gmail address:');
     if (!email) return;
-    if (!email.endsWith('@gmail.com')) { alert('Please use a @gmail.com address.'); return; }
+    if (!email.includes('@')) { alert('Please enter a valid email address.'); return; }
     const name = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     const users = getUsers();
     if (!users.find(u => u.email === email.toLowerCase())) {
@@ -408,26 +555,13 @@
     showSuccess(name);
   }
 
-  // ===== FORGOT PASSWORD =====
-  function forgotPassword() {
-    const email = prompt('Enter your registered Gmail address:');
-    if (!email) return;
-    const users = getUsers();
-    const user = users.find(u => u.email === email.toLowerCase());
-    if (user) {
-      alert(`Password hint: Your password is saved locally.\n\nFor demo: alex@gmail.com → study123`);
-    } else {
-      alert('No account found with that email.');
-    }
-  }
-
   // ===== SUCCESS =====
   function showSuccess(name) {
-    document.getElementById('loginView').style.display = 'none';
-    document.getElementById('signupView').style.display = 'none';
+    hideAllViews();
+    document.querySelector('.tabs').style.display = 'none';
     document.getElementById('successName').textContent = `Welcome, ${name}! 👋`;
+    document.getElementById('successView').style.display = 'flex';
     document.getElementById('successView').classList.add('show');
-    // Update brand avatar
     document.getElementById('brandAvatarImg').src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${name}`;
     setTimeout(goToDashboard, 2500);
   }
@@ -438,17 +572,19 @@
 
   // ===== ENTER KEY =====
   document.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      const loginVisible = document.getElementById('loginView').style.display !== 'none';
-      if (loginVisible) handleLogin(); else handleSignup();
-    }
+    if (e.key !== 'Enter') return;
+    if (document.getElementById('forgotView').style.display === 'block') { handleResetPassword(); return; }
+    if (document.getElementById('signupView').style.display === 'block') { handleSignup(); return; }
+    handleLogin();
   });
 
-  // ===== CHECK IF ALREADY LOGGED IN =====
-  if (localStorage.getItem('sp_loggedIn')) {
-    // Already logged in — go straight to dashboard
-    // (comment this out if you want to always show login)
-    // goToDashboard();
+  // ===== AUTO LOGIN if session exists =====
+  const session = localStorage.getItem('sp_loggedIn');
+  if (session) {
+    try {
+      const u = JSON.parse(session);
+      if (u && u.email) goToDashboard();
+    } catch(e) { localStorage.removeItem('sp_loggedIn'); }
   }
 </script>
 </body>
