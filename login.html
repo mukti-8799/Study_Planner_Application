@@ -19,7 +19,7 @@
     /* ===== BACKGROUND IMAGE ===== */
     .scene{
       position:fixed;inset:0;z-index:0;
-      background-image:url('study-planner/assets/login-bg.jpeg');
+      background-image:url('assets/login-bg.jpeg');
       background-size:cover;
       background-position:center center;
       background-repeat:no-repeat;
@@ -369,11 +369,11 @@
 <script>
   // ===== BACKGROUND =====
   const bgTest = new Image();
-  bgTest.onload = () => { document.querySelector('.scene').style.backgroundImage = "url('study-planner/assets/login-bg.jpeg')"; };
+  bgTest.onload = () => { document.querySelector('.scene').style.backgroundImage = "url('assets/login-bg.jpeg')"; };
   bgTest.onerror = () => {
     document.querySelector('.scene').style.background = `linear-gradient(160deg,#7ec8e3 0%,#a8c8f0 15%,#b8a8e8 30%,#c8a8e0 45%,#d4b8e8 55%,#e0c8f0 65%,#e8d4f4 75%,#f0e0f8 85%,#f5e8fc 100%)`;
   };
-  bgTest.src = 'study-planner/assets/login-bg.jpeg';
+  bgTest.src = 'assets/login-bg.jpeg';
 
   // ===== STARS =====
   const starsEl = document.getElementById('stars');
