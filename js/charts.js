@@ -3,14 +3,36 @@
 // ============================================================
 
 function renderSubjectBars(){
-  S.subjects.forEach(s=>{ const rel=S.tasks.filter(t=>t.subject===s.name); if(rel.length) s.pct=Math.round(rel.filter(t=>t.done).length/rel.length*100); });
-  const html=S.subjects.map(s=>`<div class="subj-row"><span class="subj-name">${s.name}</span><div class="subj-bar-wrap"><div class="subj-bar-fill" style="width:${s.pct}%;background:${s.color}"></div></div><span class="subj-pct">${s.pct}%</span></div>`).join('');
-  $id('subjectBars').innerHTML=html;
+  // Build subjects dynamically from all tasks the user has entered
+  const colors=['#10b981','#3b82f6','#8b5cf6','#f59e0b','#ef4444','#06b6d4','#ec4899','#f97316'];
+  const subjectNames=[...new Set(S.tasks.map(t=>t.subject).filter(Boolean))];
+
+  // Sync S.subjects — add new ones, remove deleted ones
+  S.subjects=subjectNames.map((name,i)=>{
+    const existing=S.subjects.find(s=>s.name===name);
+    const related=S.tasks.filter(t=>t.subject===name);
+    const pct=related.length?Math.round(related.filter(t=>t.done).length/related.length*100):0;
+    return { name, pct, color: existing?existing.color:colors[i%colors.length] };
+  });
+
+  if(!S.subjects.length){
+    const el=$id('subjectBars'); if(el) el.innerHTML='<p style="color:#9ca3af;font-size:13px;text-align:center;padding:12px 0">Add tasks with subjects to see progress</p>';
+    if($id('progressBars')) $id('progressBars').innerHTML='<p style="color:#9ca3af;font-size:13px;text-align:center;padding:12px 0">No subjects yet — add tasks with a subject name</p>';
+    return;
+  }
+
+  const html=S.subjects.map(s=>`
+    <div class="subj-row">
+      <span class="subj-name">${s.name}</span>
+      <div class="subj-bar-wrap"><div class="subj-bar-fill" style="width:${s.pct}%;background:${s.color}"></div></div>
+      <span class="subj-pct">${s.pct}%</span>
+    </div>`).join('');
+  if($id('subjectBars')) $id('subjectBars').innerHTML=html;
   if($id('progressBars')) $id('progressBars').innerHTML=html;
 }
 
 function renderProgressPage(){
-  if($id('progressBars')) $id('progressBars').innerHTML=S.subjects.map(s=>`<div class="subj-row"><span class="subj-name">${s.name}</span><div class="subj-bar-wrap"><div class="subj-bar-fill" style="width:${s.pct}%;background:${s.color}"></div></div><span class="subj-pct">${s.pct}%</span></div>`).join('');
+  renderSubjectBars(); // reuses the same dynamic logic
 }
 
 function renderDonut(){

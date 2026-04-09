@@ -39,12 +39,7 @@ const DEFAULT = {
     { id: 3, name: 'History Timeline.pdf', type: 'PDF', url: '', color: '#f59e0b' },
     { id: 4, name: 'Important Links', type: 'Link', url: '', color: '#10b981' },
   ],
-  subjects: [
-    { name: 'Biology', pct: 68, color: '#10b981' },
-    { name: 'Math', pct: 52, color: '#3b82f6' },
-    { name: 'History', pct: 81, color: '#8b5cf6' },
-    { name: 'English', pct: 40, color: '#f59e0b' },
-  ],
+  subjects: [],
   notes: [],
   flashcards: [],
   avatar: '',
